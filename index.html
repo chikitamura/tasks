@@ -742,9 +742,9 @@
             <div class="chiikawa-section">
                 <h2>ちいかわボタン</h2>
                 <div class="character-container" id="characterChat">
-                    <img id="characterImage" class="character-image" src="" alt="キャラクター">
+                    <img id="characterImage" class="character-image" src="images/chiikawa1.png" alt="キャラクター">
                     <div class="speech-bubble">
-                        <p id="characterMessage"></p>
+                        <p id="characterMessage">わァッわッ</p>
                     </div>
                 </div>
                 <div class="fortune-button-container">
@@ -895,6 +895,16 @@
         });
 
         function initializeApp() {
+            // キャラクター表示の初期化
+            const characterImage = document.getElementById('characterImage');
+            const messageElement = document.getElementById('characterMessage');
+            
+            // デフォルトのキャラクターと一言を設定
+            if (!characterImage.src) {
+                characterImage.src = 'images/chiikawa1.png';
+                messageElement.textContent = 'わァッわッ';
+            }
+
             // Google API 設定
             const CLIENT_ID = '218880242561-1safi82gp2u0fsahvao61reoov16o2kb.apps.googleusercontent.com';
             const API_KEY = 'AIzaSyAzJKiu6-yjtTjZZX3Mf_0kICex8dzWnws';
