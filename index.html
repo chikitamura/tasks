@@ -1048,7 +1048,8 @@
         // タスク管理
         let tasks = loadData('tasks') || [];
         let completedTasks = loadData('completedTasks') || {};
-        let schedules = loadData('schedules') || [];
+        let schedules = [];  // スケジュールを空の配列として初期化
+        saveData('schedules', schedules);  // 空の配列を保存
 
         // 既存のタスクを削除
         saveData('tasks', tasks);
