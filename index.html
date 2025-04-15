@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chikitam タスク管理メーカー</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Chika';
+            src: url('fonts/chika.ttf') format('truetype'); /* TTFフォーマットの場合 */
+            /* 以下は必要に応じて他のフォーマットも追加 */
+            /* src: url('fonts/chika.woff2') format('woff2'),
+                  url('fonts/chika.woff') format('woff'); */
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap; /* フォント読み込み中の表示方法 */
+        }
+
+        :root {
+            --chiikawa-pink: #FF93AC;
+            --chiikawa-blue: #8DD9F8;
+            --chiikawa-yellow: #FFED8A;
+            --chiikawa-green: #A6E8C2;
+            --chiikawa-bg: #FFF8EE;
+            --chiikawa-text: #5A3D2B;
+        }
+
+        body {
+            background-color: var(--chiikawa-bg);
+            color: var(--chiikawa-text);
+            font-family: 'M PLUS Rounded 1c', 'Chika', sans-serif;
+            line-height: 1.6;
+        }
+
+        .cat-header {
+            background-color: var(--chiikawa-blue);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(137, 217, 248, 0.3);
+            border: 3px solid white;
+        }
+
+        .cat-header h1 {
+            font-weight: 700;
+            color: white;
+            text-shadow: 1px 1px 0 var(--chiikawa-text), 
+                         -1px 1px 0 var(--chiikawa-text), 
+                         1px -1px 0 var(--chiikawa-text), 
+                         -1px -1px 0 var(--chiikawa-text);
+            font-size: 3rem;
+            letter-spacing: 1px;
+            font-family: 'Chika', cursive;
+        }
+
+        .current-datetime {
+            font-size: 1.2rem;
+            margin-top: 10px;
+            color: var(--chiikawa-text);
+            background-color: white;
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-weight: 500;
+        }
+
+        .cat-card {
+            background-color: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 3px solid var(--chiikawa-yellow);
+        }
+
+        .cat-card h2 {
+            color: var(--chiikawa-text);
+            font-weight: 700;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            border-bottom: 3px dotted var(--chiikawa-yellow);
+            padding-bottom: 10px;
+            text-align: center;
+        }
+
+        .cat-button {
+            background-color: var(--chiikawa-pink);
+            border: none;
+            color: white;
+            font-weight: 600;
+            border-radius: 30px;
+            padding: 8px 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .cat-button:hover {
+            background-color: #FF7B9A;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 147, 172, 0.3);
+            color: white;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 2px dotted var(--chiikawa-yellow);
+            transition: background-color 0.2s;
+            cursor: move;
+            background-color: white;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .todo-item:hover {
+            background-color: rgba(255, 237, 138, 0.1);
+        }
+
+        .todo-item:last-child {
+            border-bottom: none;
+        }
+
+        .todo-checkbox {
+            margin-right: 15px;
+            width: 22px;
+            height: 22px;
+            accent-color: var(--chiikawa-pink);
+        }
+
+        .todo-content {
+            flex-grow: 1;
+        }
+
+        .todo-content h5 {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--chiikawa-text);
+        }
+
+        .completed-task {
+            text-decoration: line-through;
+            color: #aaa;
+        }
+
+        .task-memo {
+            font-size: 0.9em;
+            color: #777;
+            margin-top: 5px;
+            font-style: italic;
+            background-color: rgba(166, 232, 194, 0.2);
+            padding: 5px 10px;
+            border-radius: 10px;
+            border-left: 3px solid var(--chiikawa-green);
+        }
+
+        .memo-input {
+            width: 100%;
+            margin-top: 8px;
+            padding: 8px 12px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            transition: border-color 0.2s;
+        }
+
+        .memo-input:focus {
+            outline: none;
+            border-color: var(--chiikawa-green);
+        }
+
+        .status-not-started {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .status-in-progress {
+            background-color: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .status-completed {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .progress {
+            height: 20px;
+        }
+
+        .schedule-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .schedule-item:last-child {
+            border-bottom: none;
+        }
+
+        .calendar-view {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            border: 3px solid var(--chiikawa-blue);
+            border-radius: 15px;
+            padding: 15px;
+            background-color: rgba(141, 217, 248, 0.1);
+            height: 600px;
+            overflow-y: auto;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px dotted var(--chiikawa-blue);
+            color: var(--chiikawa-text);
+            position: sticky;
+            top: 0;
+            background-color: rgba(141, 217, 248, 0.1);
+            z-index: 10;
+        }
+
+        .calendar-time-grid {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            flex-grow: 1;
+            margin-top: 10px;
+        }
+
+        .calendar-time-slot {
+            display: flex;
+            height: 60px;
+            border-top: 1px solid rgba(141, 217, 248, 0.3);
+            position: relative;
+        }
+
+        .calendar-time-label {
+            width: 60px;
+            font-size: 0.8rem;
+            color: #666;
+            text-align: right;
+            padding-right: 10px;
+            font-weight: 500;
+            position: relative;
+            top: -10px;
+        }
+
+        .calendar-time-content {
+            flex-grow: 1;
+            position: relative;
+        }
+
+        .calendar-event {
+            position: absolute;
+            left: 5px;
+            right: 5px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 8px;
+            border-left: 4px solid var(--chiikawa-pink);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            z-index: 5;
+            transition: transform 0.2s, box-shadow 0.2s;
+            min-height: 30px;
+        }
+
+        .calendar-event:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            z-index: 6;
+        }
+
+        .calendar-event-time {
+            font-size: 0.75rem;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+        }
+
+        .calendar-event-title {
+            font-weight: 600;
+            color: var(--chiikawa-text);
+            font-size: 0.9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* キャラクター会話スタイル */
+        .character-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .character-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: contain;
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 3px solid var(--chiikawa-pink);
+            padding: 5px;
+        }
+
+        .speech-bubble {
+            position: relative;
+            background-color: white;
+            border-radius: 20px;
+            padding: 15px 20px;
+            max-width: 280px;
+            margin-left: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 3px solid var(--chiikawa-yellow);
+        }
+
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -15px;
+            transform: translateY(-50%);
+            border-width: 15px 15px 15px 0;
+            border-style: solid;
+            border-color: transparent var(--chiikawa-yellow) transparent transparent;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -11px;
+            transform: translateY(-50%);
+            border-width: 11px 11px 11px 0;
+            border-style: solid;
+            border-color: transparent white transparent transparent;
+        }
+
+        .speech-bubble p {
+            margin: 0;
+            font-size: 1.2rem;
+            color: var(--chiikawa-text);
+            font-weight: 600;
+            text-align: center;
+            font-family: 'Chika', cursive;
+        }
+
+        /* フォーム要素のスタイル */
+        .form-control {
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 10px 15px;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--chiikawa-blue);
+            box-shadow: 0 0 0 0.25rem rgba(141, 217, 248, 0.25);
+        }
+
+        .input-group .form-control {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .input-group .btn {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        /* CSVインポートセクション */
+        .csv-import-section {
+            background-color: rgba(255, 237, 138, 0.2);
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 25px;
+            border: 2px dashed var(--chiikawa-yellow);
+        }
+
+        .csv-import-section h4 {
+            color: var(--chiikawa-text);
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* きょうのちいかわセクション */
+        .chiikawa-section {
+            background-color: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 3px solid var(--chiikawa-pink);
+        }
+
+        .chiikawa-section h2 {
+            color: var(--chiikawa-text);
+            font-weight: 700;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            border-bottom: 3px dotted var(--chiikawa-pink);
+            padding-bottom: 10px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .row {
+                flex-direction: column;
+            }
+            
+            .cat-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .speech-bubble {
+                max-width: 220px;
+            }
+        }
+
+        /* リストビューのスタイル */
+        .schedule-list-view {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .schedule-item {
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            border: 2px solid var(--chiikawa-green);
+            transition: transform 0.2s;
+        }
+        
+        .schedule-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        
+        .schedule-item-time {
+            font-size: 0.85em;
+            color: #666;
+            font-weight: 600;
+            background-color: rgba(166, 232, 194, 0.2);
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .schedule-item-title {
+            font-weight: 600;
+            color: var(--chiikawa-text);
+            font-size: 1.1rem;
+        }
+        
+        /* タブボタンのスタイル */
+        .schedule-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .active-tab {
+            background-color: var(--chiikawa-blue) !important;
+            box-shadow: 0 4px 8px rgba(141, 217, 248, 0.3);
+        }
+
+        /* おみくじボタンのスタイル */
+        .fortune-button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        #fortuneButton {
+            background-color: var(--chiikawa-yellow);
+            color: var(--chiikawa-text);
+            font-weight: 700;
+            padding: 10px 30px;
+            border-radius: 30px;
+            box-shadow: 0 4px 8px rgba(255, 237, 138, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        #fortuneButton:hover {
+            background-color: #FFE458;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(255, 237, 138, 0.5);
+        }
+        
+        #fortuneButton:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(255, 237, 138, 0.3);
+        }
+        
+        #fortuneButton:disabled {
+            background-color: #f5f5f5;
+            color: #aaa;
+            transform: none;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+        
+        /* おみくじアニメーション */
+        @keyframes fortuneSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        .fortune-animation {
+            animation: fortuneSpin 1s ease-in-out;
+        }
+
+        .task-columns {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .task-column {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 100px;
+        }
+
+        .column-header {
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid;
+            text-align: center;
+        }
+
+        .todo-column .column-header {
+            border-color: var(--chiikawa-yellow);
+            color: #f4b400;
+        }
+
+        .in-progress-column .column-header {
+            border-color: var(--chiikawa-blue);
+            color: #4285f4;
+        }
+
+        .done-column .column-header {
+            border-color: var(--chiikawa-green);
+            color: #0f9d58;
+        }
+
+        .task-list {
+            min-height: 100px;
+        }
+
+        .dragging {
+            opacity: 0.5;
+        }
+
+        /* お知らせ欄のスタイル */
+        .notification-section {
+            background-color: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 3px solid var(--chiikawa-pink);
+        }
+
+        .notification-section h2 {
+            color: var(--chiikawa-text);
+            font-weight: 700;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            border-bottom: 3px dotted var(--chiikawa-pink);
+            padding-bottom: 10px;
+            text-align: center;
+        }
+
+        .notification-item {
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            background-color: rgba(255, 147, 172, 0.1);
+            border-left: 4px solid var(--chiikawa-pink);
+        }
+
+        .notification-item.deadline {
+            background-color: rgba(255, 99, 71, 0.1);
+            border-left-color: tomato;
+        }
+
+        .notification-item.meeting {
+            background-color: rgba(141, 217, 248, 0.1);
+            border-left-color: var(--chiikawa-blue);
+        }
+
+        .notification-time {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .notification-content {
+            font-weight: 600;
+            color: var(--chiikawa-text);
+        }
+
+        /* 討伐終了ボタンのスタイル */
+        .complete-button {
+            background-color: var(--chiikawa-green);
+            color: white;
+            font-weight: 700;
+            padding: 15px 30px;
+            border-radius: 30px;
+            width: 100%;
+            margin-top: 20px;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .complete-button:hover {
+            background-color: #95d7b1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(166, 232, 194, 0.3);
+        }
+    </style>
+    <!-- Google API Scripts -->
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://accounts.google.com/gsi/client"></script>
+</head>
+<body>
+    <div class="container py-4">
+        <div class="cat-header">
+            <h1>なんか かんりするやつ</h1>
+            <div class="current-datetime" id="currentDateTime"></div>
+        </div>
+
+        <!-- お知らせセクション -->
+        <div class="notification-section">
+            <h2>お知らせ</h2>
+            <div id="notificationList">
+                <!-- お知らせがここに動的に追加されます -->
+            </div>
+        </div>
+
+        <!-- きょうのちいかわセクション -->
+        <div class="chiikawa-section">
+            <h2>ちいかわボタン</h2>
+            <div class="character-container" id="characterChat">
+                <img id="characterImage" class="character-image" src="" alt="キャラクター">
+                <div class="speech-bubble">
+                    <p id="characterMessage"></p>
+                </div>
+            </div>
+            <div class="fortune-button-container">
+                <button id="fortuneButton" class="btn cat-button">キャラクターを表示</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- タスク管理セクション -->
+            <div class="col-md-6">
+                <div class="cat-card">
+                    <h2>討伐リスト</h2>
+                    <form id="addTaskForm" class="mt-4">
+                        <div class="input-group mb-3">
+                            <input type="text" id="newTask" class="form-control" placeholder="新しいタスクを入力">
+                            <input type="date" id="taskDeadline" class="form-control" style="max-width: 150px;">
+                            <button type="submit" class="btn cat-button">追加</button>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" id="newTaskMemo" class="form-control" placeholder="タスクのメモ（任意）">
+                        </div>
+                    </form>
+                    
+                    <div class="task-columns">
+                        <div class="task-column todo-column">
+                            <div class="column-header">Todo</div>
+                            <div class="task-list" id="todoList" ondragover="event.preventDefault()" ondrop="drop(event)" data-status="todo"></div>
+                        </div>
+                        <div class="task-column in-progress-column">
+                            <div class="column-header">In Progress</div>
+                            <div class="task-list" id="inProgressList" ondragover="event.preventDefault()" ondrop="drop(event)" data-status="in-progress"></div>
+                        </div>
+                        <div class="task-column done-column">
+                            <div class="column-header">Done</div>
+                            <div class="task-list" id="doneList" ondragover="event.preventDefault()" ondrop="drop(event)" data-status="done"></div>
+                        </div>
+                    </div>
+                    <button id="completeAllButton" class="complete-button">今日の討伐終わり</button>
+                </div>
+            </div>
+
+            <!-- スケジュール管理セクション -->
+            <div class="col-md-6">
+                <div class="cat-card">
+                    <h2>きょうのよてい</h2>
+                    
+                    <!-- タブボタン -->
+                    <div class="schedule-tabs mb-3">
+                        <button id="calendarViewTab" class="btn cat-button active-tab me-2">カレンダー表示</button>
+                        <button id="listViewTab" class="btn cat-button">リスト表示</button>
+                    </div>
+                    
+                    <!-- カレンダービュー -->
+                    <div id="calendarView" class="calendar-view mb-4">
+                        <!-- カレンダービューがここに表示されます -->
+                    </div>
+                    
+                    <!-- リストビュー (最初は非表示) -->
+                    <div id="scheduleListView" class="schedule-list-view mb-4" style="display: none;">
+                        <!-- スケジュールリストがここに表示されます -->
+                    </div>
+                    
+                    <form id="addScheduleForm" class="mt-4">
+                        <div class="mb-3">
+                            <input type="text" id="scheduleTitle" class="form-control" placeholder="予定のタイトル">
+                        </div>
+                        <div class="mb-3">
+                            <input type="datetime-local" id="startTime" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <input type="datetime-local" id="endTime" class="form-control">
+                        </div>
+                        <button type="submit" class="btn cat-button">予定を追加</button>
+                    </form>
+
+                    <!-- CSVインポートセクション -->
+                    <div class="csv-import-section">
+                        <h4>CSVから予定をインポート</h4>
+                        <div class="mb-3">
+                            <input type="file" id="csvFileInput" class="form-control" accept=".csv">
+                        </div>
+                        <button id="importCsvBtn" class="btn cat-button w-100">CSVをインポート</button>
+                        <div class="mt-2 small text-muted text-center">
+                            CSVフォーマット: id, Event Name, Start Time, End Time<br>
+                            例: 1, ミーティング, 2025-04-15T10:00, 2025-04-15T11:00
+                        </div>
+                    </div>
+
+                    <!-- Google Calendar インポートセクション -->
+                    <div class="csv-import-section" style="margin-top: 20px;">
+                        <h4>Google Calendar から予定をインポート</h4>
+                        <button id="googleSignInBtn" class="btn cat-button w-100 mb-3">Google でログイン</button>
+                        <button id="importGoogleCalendarBtn" class="btn cat-button w-100" style="display: none;">
+                            カレンダーをインポート
+                        </button>
+                        <div id="googleSignInStatus" class="mt-2 small text-center"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- キャラクター画像 -->
+    <div style="display: none;">
+        <img id="hachiware1" src="images/hachiware1.png" alt="はちわれ1">
+        <img id="hachiware2" src="images/hachiware2.png" alt="はちわれ2">
+        <img id="hachiware3" src="images/hachiware3.png" alt="はちわれ3">
+        <img id="chiikawa1" src="images/chiikawa1.png" alt="ちいかわ1">
+        <img id="chiikawa2" src="images/chiikawa2.png" alt="ちいかわ2">
+        <img id="chiikawa3" src="images/chiikawa3.png" alt="ちいかわ3">
+    </div>
+
+    <script>
+        // Google API 設定
+        const CLIENT_ID = '218880242561-1safi82gp2u0fsahvao61reoov16o2kb.apps.googleusercontent.com';
+        const API_KEY = 'AIzaSyAzJKiu6-yjtTjZZX3Mf_0kICex8dzWnws';
+        const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
+        const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
+        
+        let tokenClient;
+        let gapiInited = false;
+        let gisInited = false;
+        
+        // Google API の初期化
+        function initializeGoogleApi() {
+            document.getElementById('googleSignInBtn').style.display = 'block';
+            document.getElementById('importGoogleCalendarBtn').style.display = 'none';
+            
+            // GAPI の初期化
+            gapi.load('client', async () => {
+                await gapi.client.init({
+                    apiKey: API_KEY,
+                    discoveryDocs: [DISCOVERY_DOC],
+                });
+                gapiInited = true;
+                checkGoogleApiInitialized();
+            });
+            
+            // Google Identity Services の初期化
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                callback: (resp) => {
+                    if (resp.error !== undefined) {
+                        document.getElementById('googleSignInStatus').textContent = 'ログインに失敗しました。';
+                        return;
+                    }
+                    document.getElementById('googleSignInBtn').style.display = 'none';
+                    document.getElementById('importGoogleCalendarBtn').style.display = 'block';
+                    document.getElementById('googleSignInStatus').textContent = 'ログインしました。カレンダーをインポートできます。';
+                }
+            });
+            gisInited = true;
+            checkGoogleApiInitialized();
+        }
+        
+        function checkGoogleApiInitialized() {
+            if (gapiInited && gisInited) {
+                document.getElementById('googleSignInBtn').disabled = false;
+            }
+        }
+        
+        // Google へのログイン
+        function handleGoogleSignIn() {
+            tokenClient.requestAccessToken({ prompt: 'consent' });
+        }
+        
+        // Google Calendar からのイベントインポート
+        async function importGoogleCalendarEvents() {
+            try {
+                document.getElementById('googleSignInStatus').textContent = '予定を取得中...';
+                
+                // 今日の日付の範囲を設定
+                const now = new Date();
+                const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0).toISOString();
+                const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59).toISOString();
+                
+                const response = await gapi.client.calendar.events.list({
+                    'calendarId': 'primary',
+                    'timeMin': startOfDay,
+                    'timeMax': endOfDay,
+                    'showDeleted': false,
+                    'singleEvents': true,
+                    'orderBy': 'startTime'
+                });
+                
+                const events = response.result.items;
+                if (!events || events.length === 0) {
+                    document.getElementById('googleSignInStatus').textContent = '今日の予定は見つかりませんでした。';
+                    return;
+                }
+                
+                // 重複チェックとインポート
+                let newCount = 0;
+                for (let i = 0; i < events.length; i++) {
+                    const event = events[i];
+                    
+                    // イベントの開始時間と終了時間を取得
+                    const startTime = event.start.dateTime || `${event.start.date}T00:00:00`;
+                    const endTime = event.end.dateTime || `${event.end.date}T23:59:59`;
+                    
+                    // 重複チェック
+                    const isDuplicate = schedules.some(schedule => 
+                        schedule.title === event.summary &&
+                        new Date(schedule.startTime).toISOString() === new Date(startTime).toISOString() &&
+                        new Date(schedule.endTime).toISOString() === new Date(endTime).toISOString()
+                    );
+                    
+                    if (!isDuplicate) {
+                        const newSchedule = {
+                            title: event.summary || '無題のイベント',
+                            startTime: startTime,
+                            endTime: endTime
+                        };
+                        
+                        schedules.push(newSchedule);
+                        newCount++;
+                    }
+                }
+                
+                if (newCount > 0) {
+                    saveData('schedules', schedules);
+                    updateCalendarView();
+                    updateScheduleListView();
+                    
+                    document.getElementById('googleSignInStatus').textContent = 
+                        `${events.length}件中${newCount}件の今日の予定をインポートしました。`;
+                } else {
+                    document.getElementById('googleSignInStatus').textContent = 
+                        `${events.length}件の予定がありましたが、すべて既にインポート済みです。`;
+                }
+            } catch (err) {
+                document.getElementById('googleSignInStatus').textContent = 
+                    `エラーが発生しました: ${err.message}`;
+                console.error('Error importing Google Calendar events:', err);
+            }
+        }
+        
+        // Google API 初期化とイベントリスナーの設定
+        document.addEventListener('DOMContentLoaded', function initializeApp() {
+            // ページの初期化処理を一度だけ実行
+            document.removeEventListener('DOMContentLoaded', initializeApp);
+            
+            // キャラクター表示
+            updateCharacterDisplay();
+            
+            // ボタンのイベントリスナーを設定
+            document.getElementById('fortuneButton').addEventListener('click', updateCharacterDisplay);
+            
+            // Google API 初期化
+            initializeGoogleApi();
+            
+            // Google ボタンのイベントリスナーを設定
+            document.getElementById('googleSignInBtn').addEventListener('click', handleGoogleSignIn);
+            document.getElementById('importGoogleCalendarBtn').addEventListener('click', importGoogleCalendarEvents);
+        });
+        
+        // キャラクター会話機能
+        const hachiwareMessages = [
+            "こんな日が..ず〜っと続くといいよね....",
+            "ともだちでいてくれるよねェッ",
+            "エ〜ヘヘ"
+        ];
+        
+        const chiikawaMessages = [
+            "わァッわッ",
+            "フッｳｯ",
+            "イヤイヤっ"
+        ];
+        
+        // キャラクターとセリフを更新する関数
+        function updateCharacterDisplay() {
+            // ボタンを一時的に無効化
+            const fortuneButton = document.getElementById('fortuneButton');
+            fortuneButton.disabled = true;
+            fortuneButton.textContent = '…呼び出し中…';
+            
+            // キャラクターにアニメーション適用
+            const characterImage = document.getElementById('characterImage');
+            characterImage.classList.add('fortune-animation');
+            
+            // 少し待ってからキャラクター表示（演出効果）
+            setTimeout(() => {
+                // ランダムなキャラクター選択
+                const randomType = Math.random() < 0.5 ? 'hachiware' : 'chiikawa';
+                const randomIndex = Math.floor(Math.random() * 3) + 1;
+                const characterId = `${randomType}${randomIndex}`;
+                
+                characterImage.src = document.getElementById(characterId).src;
+                characterImage.classList.remove('fortune-animation');
+                
+                // メッセージを設定
+                const messageElement = document.getElementById('characterMessage');
+                
+                // 画像のsrcからファイル名を取得
+                const imagePath = characterImage.src;
+                const fileName = imagePath.split('/').pop().toLowerCase();
+                
+                // kimeraが含まれる場合は特別なメッセージを表示
+                if (fileName.includes('kimera')) {
+                    messageElement.textContent = "あはっあはっ こんなになっちゃった...";
+                } else {
+                    // 通常のメッセージを表示
+                    if (randomType === 'hachiware') {
+                        messageElement.textContent = hachiwareMessages[randomIndex - 1];
+                    } else {
+                        messageElement.textContent = chiikawaMessages[randomIndex - 1];
+                    }
+                }
+                
+                // 吹き出しを強調
+                const speechBubble = document.querySelector('.speech-bubble');
+                speechBubble.style.backgroundColor = '#fff6e0';
+                speechBubble.style.transform = 'scale(1.05)';
+                speechBubble.style.transition = 'all 0.3s ease';
+                
+                // ボタンとアニメーションを元に戻す
+                setTimeout(() => {
+                    speechBubble.style.backgroundColor = '';
+                    speechBubble.style.transform = '';
+                    fortuneButton.disabled = false;
+                    fortuneButton.textContent = 'キャラクターを表示';
+                }, 2000);
+            }, 1000);
+        }
+        
+        // 特定のメッセージをキャラクターに表示させる
+        function characterSay(message) {
+            const randomType = Math.random() < 0.5 ? 'hachiware' : 'chiikawa';
+            const randomIndex = Math.floor(Math.random() * 3) + 1;
+            const characterId = `${randomType}${randomIndex}`;
+            
+            const characterImage = document.getElementById('characterImage');
+            characterImage.src = document.getElementById(characterId).src;
+            
+            const messageElement = document.getElementById('characterMessage');
+            messageElement.textContent = message;
+            
+            // 吹き出しを一時的に強調
+            const speechBubble = document.querySelector('.speech-bubble');
+            speechBubble.style.backgroundColor = '#fff6e0';
+            speechBubble.style.transform = 'scale(1.05)';
+            speechBubble.style.transition = 'all 0.3s ease';
+            
+            // 元に戻す
+            setTimeout(() => {
+                speechBubble.style.backgroundColor = '';
+                speechBubble.style.transform = '';
+            }, 3000);
+        }
+        
+        // 日付と時刻の更新
+        function updateDateTime() {
+            const now = new Date();
+            const dateTimeElement = document.getElementById('currentDateTime');
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric', 
+                weekday: 'long',
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit'
+            };
+            dateTimeElement.textContent = now.toLocaleDateString('ja-JP', options);
+        }
+
+        // 1秒ごとに時刻を更新
+        setInterval(updateDateTime, 1000);
+        updateDateTime(); // 初回表示
+
+        // データの保存と読み込み
+        function saveData(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        function loadData(key) {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : [];
+        }
+
+        // タスク管理
+        let tasks = loadData('tasks') || [];
+        let completedTasks = loadData('completedTasks') || {};
+        let schedules = loadData('schedules') || [];
+
+        // 既存のタスクを削除
+        saveData('tasks', tasks);
+
+        function updateTaskList() {
+            const todoList = document.getElementById('todoList');
+            const inProgressList = document.getElementById('inProgressList');
+            const doneList = document.getElementById('doneList');
+            
+            todoList.innerHTML = '';
+            inProgressList.innerHTML = '';
+            doneList.innerHTML = '';
+            
+            tasks.forEach((task, index) => {
+                const taskElement = document.createElement('div');
+                taskElement.className = 'todo-item';
+                taskElement.draggable = true;
+                taskElement.setAttribute('data-task-id', index);
+                
+                // デッドライン表示の追加
+                const deadlineDisplay = task.deadline ? 
+                    `<div class="task-deadline ${isDeadlineNear(task.deadline) ? 'deadline-near' : ''}">
+                        期限: ${formatDate(task.deadline)}
+                    </div>` : '';
+                
+                taskElement.innerHTML = `
+                    <div class="todo-content">
+                        <h5 class="mb-0">${task.title}</h5>
+                        ${deadlineDisplay}
+                        ${task.memo ? `<div class="task-memo">${task.memo}</div>` : ''}
+                    </div>
+                `;
+                
+                taskElement.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', index);
+                    taskElement.classList.add('dragging');
+                });
+                
+                taskElement.addEventListener('dragend', () => {
+                    taskElement.classList.remove('dragging');
+                });
+                
+                switch(task.status) {
+                    case 'in-progress':
+                        inProgressList.appendChild(taskElement);
+                        break;
+                    case 'done':
+                        doneList.appendChild(taskElement);
+                        break;
+                    default:
+                        todoList.appendChild(taskElement);
+                }
+            });
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const taskId = event.dataTransfer.getData('text/plain');
+            const newStatus = event.target.closest('.task-list').dataset.status;
+            
+            tasks[taskId].status = newStatus;
+            saveData('tasks', tasks);
+            updateTaskList();
+        }
+
+        document.getElementById('addTaskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const taskName = document.getElementById('newTask').value.trim();
+            const taskMemo = document.getElementById('newTaskMemo').value.trim();
+            const deadline = document.getElementById('taskDeadline').value;
+            
+            if (taskName) {
+                tasks.push({
+                    title: taskName,
+                    memo: taskMemo,
+                    status: 'todo',
+                    deadline: deadline,
+                    createdAt: new Date().toISOString()
+                });
+                saveData('tasks', tasks);
+                document.getElementById('newTask').value = '';
+                document.getElementById('newTaskMemo').value = '';
+                document.getElementById('taskDeadline').value = '';
+                updateTaskList();
+                updateNotifications();
+            }
+        });
+
+        // スケジュール管理
+        function updateCalendarView() {
+            const calendarView = document.getElementById('calendarView');
+            calendarView.innerHTML = '';
+
+            // 今日の日付
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // 今日の日付の終わり
+            const endOfToday = new Date(today);
+            endOfToday.setHours(23, 59, 59, 999);
+            
+            // 今日の予定をフィルタリング
+            const todaySchedules = schedules.filter(schedule => {
+                const scheduleDate = new Date(schedule.startTime);
+                return scheduleDate >= today && scheduleDate <= endOfToday;
+            });
+
+            // ヘッダーを作成
+            const dayHeader = document.createElement('div');
+            dayHeader.className = 'calendar-day-header';
+            dayHeader.textContent = today.toLocaleDateString('ja-JP', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            calendarView.appendChild(dayHeader);
+            
+            // 時間グリッドを作成
+            const timeGrid = document.createElement('div');
+            timeGrid.className = 'calendar-time-grid';
+            
+            // 8時〜20時まで表示（カスタマイズ可能）
+            const startHour = 8;
+            const endHour = 20;
+            
+            // 時間スロットを生成
+            for (let hour = startHour; hour <= endHour; hour++) {
+                const timeSlot = document.createElement('div');
+                timeSlot.className = 'calendar-time-slot';
+                timeSlot.setAttribute('data-hour', hour);
+                
+                const timeLabel = document.createElement('div');
+                timeLabel.className = 'calendar-time-label';
+                timeLabel.textContent = `${hour}:00`;
+                
+                const timeContent = document.createElement('div');
+                timeContent.className = 'calendar-time-content';
+                
+                timeSlot.appendChild(timeLabel);
+                timeSlot.appendChild(timeContent);
+                timeGrid.appendChild(timeSlot);
+            }
+            
+            calendarView.appendChild(timeGrid);
+            
+            if (todaySchedules.length === 0) {
+                const noEvent = document.createElement('div');
+                noEvent.textContent = '予定はありません';
+                noEvent.style.textAlign = 'center';
+                noEvent.style.padding = '10px';
+                noEvent.style.color = '#888';
+                noEvent.style.position = 'absolute';
+                noEvent.style.top = '50%';
+                noEvent.style.left = '50%';
+                noEvent.style.transform = 'translate(-50%, -50%)';
+                timeGrid.appendChild(noEvent);
+            } else {
+                // 時間順にソート
+                todaySchedules.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+                
+                // 各イベントを適切な位置に配置
+                todaySchedules.forEach(schedule => {
+                    const startTime = new Date(schedule.startTime);
+                    const endTime = new Date(schedule.endTime);
+                    
+                    // 時間外のイベントはスキップ (表示範囲外)
+                    if (startTime.getHours() > endHour || endTime.getHours() < startHour) {
+                        return;
+                    }
+                    
+                    // イベントの表示開始時刻と終了時刻を計算（表示範囲に合わせる）
+                    const displayStartHour = Math.max(startTime.getHours(), startHour);
+                    const displayStartMinute = displayStartHour === startTime.getHours() ? startTime.getMinutes() : 0;
+                    
+                    const displayEndHour = Math.min(endTime.getHours(), endHour);
+                    const displayEndMinute = displayEndHour === endTime.getHours() ? endTime.getMinutes() : 0;
+                    
+                    // イベントの位置とサイズを計算
+                    const startPosition = (displayStartHour - startHour) * 60 + displayStartMinute;
+                    const duration = (displayEndHour - displayStartHour) * 60 + displayEndMinute - displayStartMinute;
+                    
+                    // イベント要素を作成
+                    const eventElement = document.createElement('div');
+                    eventElement.className = 'calendar-event';
+                    eventElement.style.top = `${startPosition}px`;
+                    eventElement.style.height = `${Math.max(duration, 30)}px`; // 最小高さを30pxに
+                    
+                    const timeElement = document.createElement('div');
+                    timeElement.className = 'calendar-event-time';
+                    timeElement.textContent = `${formatTime(startTime)} - ${formatTime(endTime)}`;
+                    
+                    const titleElement = document.createElement('div');
+                    titleElement.className = 'calendar-event-title';
+                    titleElement.textContent = schedule.title;
+                    
+                    eventElement.appendChild(timeElement);
+                    eventElement.appendChild(titleElement);
+                    timeGrid.appendChild(eventElement);
+                });
+            }
+            
+            // リストビューも更新（表示されている場合）
+            if (document.getElementById('scheduleListView').style.display !== 'none') {
+                updateScheduleListView();
+            }
+        }
+
+        function formatTime(date) {
+            return date.toLocaleTimeString('ja-JP', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+        }
+
+        function formatDateTime(dateTime) {
+            const date = new Date(dateTime);
+            return date.toLocaleString('ja-JP', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function createDocPreparationTask(scheduleTitle) {
+            const taskTitle = `${scheduleTitle}のDoc 準備`;
+            
+            // Check if task already exists for today
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const existingTask = tasks.find(task => {
+                const taskDate = new Date(task.createdAt);
+                taskDate.setHours(0, 0, 0, 0);
+                return task.title === taskTitle && taskDate.getTime() === today.getTime();
+            });
+
+            if (!existingTask) {
+                const newTask = {
+                    title: taskTitle,
+                    status: 'todo',
+                    createdAt: new Date().toISOString(),
+                    memo: "ドキュメントの準備が必要です。"
+                };
+                tasks.push(newTask);
+                saveData('tasks', tasks);
+                updateTaskList();
+            }
+        }
+
+        function checkAndCreateDocTask(scheduleTitle) {
+            if (scheduleTitle.includes("Weekly") || scheduleTitle.includes("MTG")) {
+                createDocPreparationTask(scheduleTitle);
+            }
+        }
+
+        document.getElementById('addScheduleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('scheduleTitle').value.trim();
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+
+            if (title && startTime && endTime) {
+                const newSchedule = {
+                    title: title,
+                    startTime: startTime,
+                    endTime: endTime
+                };
+                
+                schedules.push(newSchedule);
+                saveData('schedules', schedules);
+                document.getElementById('scheduleTitle').value = '';
+                document.getElementById('startTime').value = '';
+                document.getElementById('endTime').value = '';
+                updateCalendarView();
+                updateScheduleListView();
+            }
+        });
+
+        // 初期表示
+        updateTaskList();
+        updateCalendarView();
+        updateScheduleListView(); // リストビューも初期化
+
+        // CSVインポート機能
+        document.getElementById('importCsvBtn').addEventListener('click', function() {
+            const fileInput = document.getElementById('csvFileInput');
+            const file = fileInput.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.readAsText(file);
+                
+                reader.onload = function(e) {
+                    const csvContent = e.target.result;
+                    const importedSchedules = parseCSV(csvContent);
+                    
+                    if (importedSchedules.length > 0) {
+                        // 今日の日付
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        
+                        // 今日の日付の終わり
+                        const endOfToday = new Date(today);
+                        endOfToday.setHours(23, 59, 59, 999);
+                        
+                        // 今日の予定のみフィルタリング
+                        const todayImportedSchedules = importedSchedules.filter(schedule => {
+                            const scheduleDate = new Date(schedule.startTime);
+                            return scheduleDate >= today && scheduleDate <= endOfToday;
+                        });
+                        
+                        // 重複チェック
+                        let newCount = 0;
+                        todayImportedSchedules.forEach(newSchedule => {
+                            const isDuplicate = schedules.some(schedule => 
+                                schedule.title === newSchedule.title &&
+                                schedule.startTime === newSchedule.startTime &&
+                                schedule.endTime === newSchedule.endTime
+                            );
+                            
+                            if (!isDuplicate) {
+                                schedules.push(newSchedule);
+                                newCount++;
+                            }
+                        });
+                        
+                        saveData('schedules', schedules);
+                        updateCalendarView();
+                        updateScheduleListView();
+                        
+                        alert(`${todayImportedSchedules.length}件中${newCount}件の今日の予定をインポートしました。`);
+                    } else {
+                        alert('インポートできる予定が見つかりませんでした。CSVフォーマットを確認してください。');
+                    }
+                };
+                
+                reader.onerror = function() {
+                    alert('ファイルの読み込み中にエラーが発生しました。');
+                };
+            } else {
+                alert('CSVファイルを選択してください。');
+            }
+        });
+        
+        function parseCSV(csvContent) {
+            const result = [];
+            const lines = csvContent.split('\n');
+            
+            for (let i = 0; i < lines.length; i++) {
+                // 空行をスキップ
+                if (!lines[i].trim()) continue;
+                
+                // CSVの行を解析（簡易的なCSVパース - カンマと引用符の処理）
+                const values = [];
+                let insideQuote = false;
+                let currentValue = '';
+                
+                for (let j = 0; j < lines[i].length; j++) {
+                    const char = lines[i][j];
+                    
+                    if (char === '"') {
+                        insideQuote = !insideQuote;
+                    } else if (char === ',' && !insideQuote) {
+                        values.push(currentValue.trim());
+                        currentValue = '';
+                    } else {
+                        currentValue += char;
+                    }
+                }
+                
+                // 最後の値を追加
+                values.push(currentValue.trim());
+                
+                // 最低4つの値があることを確認（id, イベント名、開始時間、終了時間）
+                if (values.length >= 4) {
+                    // 引用符を削除
+                    const id = values[0].trim();
+                    const title = values[1].trim().replace(/^"|"$/g, '');
+                    const startTime = values[2].trim().replace(/^"|"$/g, '');
+                    const endTime = values[3].trim().replace(/^"|"$/g, '');
+                    
+                    // 先頭行がヘッダーの場合はスキップ
+                    if (i === 0 && (title.toLowerCase() === 'event name' || 
+                                    id.toLowerCase() === 'id')) {
+                        continue;
+                    }
+                    
+                    result.push({
+                        title: title,
+                        startTime: startTime,
+                        endTime: endTime
+                    });
+                }
+            }
+            
+            return result;
+        }
+
+        // スケジュール表示切り替え
+        document.getElementById('calendarViewTab').addEventListener('click', function() {
+            document.getElementById('calendarView').style.display = 'flex';
+            document.getElementById('scheduleListView').style.display = 'none';
+            document.getElementById('calendarViewTab').classList.add('active-tab');
+            document.getElementById('listViewTab').classList.remove('active-tab');
+        });
+        
+        document.getElementById('listViewTab').addEventListener('click', function() {
+            document.getElementById('calendarView').style.display = 'none';
+            document.getElementById('scheduleListView').style.display = 'flex';
+            document.getElementById('listViewTab').classList.add('active-tab');
+            document.getElementById('calendarViewTab').classList.remove('active-tab');
+            updateScheduleListView();
+        });
+        
+        // スケジュールリストビューの更新
+        function updateScheduleListView() {
+            const scheduleListView = document.getElementById('scheduleListView');
+            scheduleListView.innerHTML = '';
+            
+            // 今日の日付
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // 今日の日付の終わり
+            const endOfToday = new Date(today);
+            endOfToday.setHours(23, 59, 59, 999);
+            
+            // 今日の予定をフィルタリング
+            const todaySchedules = schedules.filter(schedule => {
+                const scheduleDate = new Date(schedule.startTime);
+                return scheduleDate >= today && scheduleDate <= endOfToday;
+            });
+            
+            if (todaySchedules.length === 0) {
+                const noEvent = document.createElement('div');
+                noEvent.textContent = '予定はありません';
+                noEvent.style.textAlign = 'center';
+                noEvent.style.padding = '15px';
+                noEvent.style.color = '#888';
+                scheduleListView.appendChild(noEvent);
+            } else {
+                // 時間順にソート
+                todaySchedules.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+                
+                todaySchedules.forEach(schedule => {
+                    const scheduleItem = document.createElement('div');
+                    scheduleItem.className = 'schedule-item';
+                    
+                    const startTime = new Date(schedule.startTime);
+                    const endTime = new Date(schedule.endTime);
+                    
+                    const timeElement = document.createElement('div');
+                    timeElement.className = 'schedule-item-time';
+                    timeElement.textContent = `${formatTime(startTime)} - ${formatTime(endTime)}`;
+                    
+                    const titleElement = document.createElement('div');
+                    titleElement.className = 'schedule-item-title';
+                    titleElement.textContent = schedule.title;
+                    
+                    scheduleItem.appendChild(timeElement);
+                    scheduleItem.appendChild(titleElement);
+                    scheduleListView.appendChild(scheduleItem);
+                });
+            }
+        }
+
+        // 討伐終了処理
+        document.getElementById('completeAllButton').addEventListener('click', function() {
+            const today = new Date().toISOString().split('T')[0];
+            
+            // 完了タスクの保存
+            const doneTasks = tasks.filter(task => task.status === 'done');
+            if (!completedTasks[today]) {
+                completedTasks[today] = [];
+            }
+            completedTasks[today].push(...doneTasks);
+            saveData('completedTasks', completedTasks);
+            
+            // 未完了タスクの更新
+            tasks = tasks.filter(task => task.status !== 'done').map(task => {
+                if (task.deadline && new Date(task.deadline) < new Date()) {
+                    task.deadline = new Date().toISOString().split('T')[0]; // 期限切れのタスクは今日に更新
+                }
+                return task;
+            });
+            
+            saveData('tasks', tasks);
+            updateTaskList();
+            characterSay('今日も一日お疲れ様でした！');
+        });
+
+        // デッドライン関連の機能
+        function isDeadlineNear(deadline) {
+            if (!deadline) return false;
+            const deadlineDate = new Date(deadline);
+            const today = new Date();
+            const diffDays = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
+            return diffDays <= 3 && diffDays >= 0;
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('ja-JP');
+        }
+
+        // お知らせ機能
+        function updateNotifications() {
+            const notificationList = document.getElementById('notificationList');
+            notificationList.innerHTML = '';
+            const now = new Date();
+            
+            // デッドライン通知
+            tasks.forEach(task => {
+                if (task.deadline && isDeadlineNear(task.deadline)) {
+                    const notification = createNotification(
+                        '期限が近いタスクがあります',
+                        `「${task.title}」の期限は${formatDate(task.deadline)}です`,
+                        'deadline'
+                    );
+                    notificationList.appendChild(notification);
+                }
+            });
+            
+            // ミーティング通知
+            schedules.forEach(schedule => {
+                const startTime = new Date(schedule.startTime);
+                const timeDiff = startTime - now;
+                const minutesDiff = Math.floor(timeDiff / (1000 * 60));
+                
+                if (minutesDiff <= 30 && minutesDiff > 0 && 
+                    (schedule.title.includes('MTG') || schedule.title.includes('Meeting'))) {
+                    const notification = createNotification(
+                        'もうすぐミーティングが始まります',
+                        `「${schedule.title}」まであと${minutesDiff}分です`,
+                        'meeting'
+                    );
+                    notificationList.appendChild(notification);
+                }
+            });
+            
+            if (notificationList.children.length === 0) {
+                const emptyNotification = document.createElement('div');
+                emptyNotification.className = 'notification-item';
+                emptyNotification.textContent = '新しいお知らせはありません';
+                notificationList.appendChild(emptyNotification);
+            }
+        }
+
+        function createNotification(title, content, type = '') {
+            const notification = document.createElement('div');
+            notification.className = `notification-item ${type}`;
+            notification.innerHTML = `
+                <div class="notification-time">${new Date().toLocaleTimeString('ja-JP')}</div>
+                <div class="notification-content">
+                    <strong>${title}</strong><br>
+                    ${content}
+                </div>
+            `;
+            return notification;
+        }
+
+        // 定期的な更新
+        setInterval(updateNotifications, 60000); // 1分ごとに更新
+        updateNotifications(); // 初期表示
+    </script>
+</body>
+</html> 
