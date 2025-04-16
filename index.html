@@ -757,6 +757,21 @@
         .main-content {
             display: none;
         }
+
+        .section-image-container {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0 20px 0;
+        }
+        
+        .section-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 150px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 3px solid white;
+        }
     </style>
 </head>
 <body>
@@ -805,8 +820,10 @@
                 <div class="col-md-6">
                     <div class="cat-card">
                         <div class="section-header">
-                            <img src="images/toubatsu1.jpg" alt="討伐" width="40" height="40">
                             <h2>今日の討伐タスク</h2>
+                        </div>
+                        <div class="section-image-container">
+                            <img src="images/toubatsu1.jpg" alt="討伐" class="section-image">
                         </div>
                         <form id="addTaskForm" class="mt-4">
                             <div class="input-group mb-3">
@@ -841,8 +858,10 @@
                 <div class="col-md-6">
                     <div class="cat-card">
                         <div class="section-header">
-                            <img src="/tasks/images/kusamushiri1.png" alt="草むしり" width="40" height="40">
                             <h2>草むしり一覧</h2>
+                        </div>
+                        <div class="section-image-container">
+                            <img src="images/kusamushiri1.png" alt="草むしり" class="section-image">
                         </div>
                         
                         <!-- タブボタン -->
