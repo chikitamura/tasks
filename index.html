@@ -161,6 +161,29 @@
             border-left: 3px solid var(--chiikawa-green);
         }
 
+        .delete-task-btn {
+            background-color: var(--chiikawa-pink);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: 10px;
+            opacity: 0.7;
+        }
+
+        .delete-task-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+            background-color: #ff6b8b;
+        }
+
         .memo-input {
             width: 100%;
             margin-top: 8px;
@@ -293,30 +316,30 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 20px;
             margin-bottom: 20px;
-            position: relative;
         }
-
+        
         .character-image {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
+            width: 100px;
+            height: 100px;
             object-fit: contain;
-            background-color: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: opacity 0.3s ease;
             border: 3px solid var(--chiikawa-pink);
+            border-radius: 50%;
             padding: 5px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-
+        
         .speech-bubble {
             position: relative;
             background-color: white;
-            border-radius: 20px;
-            padding: 15px 20px;
-            max-width: 280px;
-            margin-left: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-radius: 15px;
+            padding: 10px 15px;
+            margin-left: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            max-width: 70%;
+            transition: all 0.3s ease;
             border: 3px solid var(--chiikawa-yellow);
         }
 
@@ -924,6 +947,9 @@
                 messageElement.textContent = 'わァッわッ';
             }
 
+            // キャラクター表示ボタンのイベントリスナー
+            document.getElementById('fortuneButton').addEventListener('click', updateCharacterDisplay);
+
             // 日付と時間の表示を更新
             updateDateTime();
             setInterval(updateDateTime, 1000);
@@ -1026,6 +1052,7 @@
                     ${deadlineDisplay}
                     ${task.memo ? `<div class="task-memo">${task.memo}</div>` : ''}
                 </div>
+                <button class="delete-task-btn" data-index="${index}">×</button>
             `;
             
             // ドラッグ開始時の処理
@@ -1044,7 +1071,23 @@
                 draggedTask = null;
             });
             
+            // 削除ボタンのイベントリスナー
+            taskElement.querySelector('.delete-task-btn').addEventListener('click', function(e) {
+                e.stopPropagation(); // イベントの伝播を止める
+                const taskIndex = parseInt(this.getAttribute('data-index'));
+                deleteTask(taskIndex);
+            });
+            
             return taskElement;
+        }
+
+        // タスク削除関数
+        function deleteTask(index) {
+            if (confirm('このタスクを削除してもよろしいですか？')) {
+                tasks.splice(index, 1);
+                saveData('tasks', tasks);
+                updateTaskList();
+            }
         }
 
         // タスクリストを更新する関数
@@ -1531,6 +1574,99 @@
             const dateTimeString = now.toLocaleDateString('ja-JP', options);
             document.getElementById('currentDateTime').textContent = dateTimeString;
         }
+
+        // キャラクター表示を更新する関数
+        function updateCharacterDisplay() {
+            // ボタンを一時的に無効化
+            const fortuneButton = document.getElementById('fortuneButton');
+            fortuneButton.disabled = true;
+            fortuneButton.textContent = '…呼び出し中…';
+            
+            // キャラクター画像にアニメーション効果
+            const characterImage = document.getElementById('characterImage');
+            characterImage.style.opacity = '0.5';
+            
+            // 少し待ってからキャラクターを変更（アニメーション効果のため）
+            setTimeout(() => {
+                // キャラクタータイプをランダムに選択（はちわれ、ちいかわ、キメラ）
+                const characterTypes = ['hachiware', 'chiikawa', 'kimera'];
+                const randomType = characterTypes[Math.floor(Math.random() * characterTypes.length)];
+                
+                // 選択したタイプに基づいて番号を決定
+                let randomIndex;
+                if (randomType === 'kimera') {
+                    // キメラは1種類のみ
+                    randomIndex = 1;
+                } else {
+                    // はちわれとちいかわは3種類ある
+                    randomIndex = Math.floor(Math.random() * 3) + 1;
+                }
+                
+                // 画像パスを設定
+                const imagePath = `images/${randomType}${randomIndex}.png`;
+                characterImage.src = imagePath;
+                
+                // メッセージを設定
+                const messageElement = document.getElementById('characterMessage');
+                
+                // キャラクターごとのメッセージ
+                const messages = {
+                    hachiware: [
+                        "こんな日が..ず〜っと続くといいよね....",
+                        "ともだちでいてくれるよねェッ",
+                        "エ〜ヘヘ"
+                    ],
+                    chiikawa: [
+                        "わァッわッ",
+                        "フッｳｯ",
+                        "イヤイヤっ"
+                    ],
+                    kimera: [
+                        "あはっあはっ こんなになっちゃった..."
+                    ]
+                };
+                
+                // メッセージを選択
+                let messageIndex;
+                if (randomType === 'kimera') {
+                    messageIndex = 0;
+                } else {
+                    messageIndex = Math.min(randomIndex - 1, messages[randomType].length - 1);
+                }
+                
+                messageElement.textContent = messages[randomType][messageIndex];
+                
+                // 吹き出しエフェクト
+                const speechBubble = document.querySelector('.speech-bubble');
+                speechBubble.style.backgroundColor = '#fff6e0';
+                speechBubble.style.transform = 'scale(1.05)';
+                
+                // 画像と吹き出しを元に戻す
+                characterImage.style.opacity = '1';
+                
+                // 少し待ってから吹き出しを元に戻し、ボタンを再有効化
+                setTimeout(() => {
+                    speechBubble.style.backgroundColor = '';
+                    speechBubble.style.transform = '';
+                    fortuneButton.disabled = false;
+                    fortuneButton.textContent = 'キャラクターを表示';
+                }, 1000);
+            }, 500);
+        }
+        
+        // DOM読み込み後に実行するイベントリスナー
+        document.addEventListener('DOMContentLoaded', function() {
+            // ページロード時に一度だけ実行される処理
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                initializeApp();
+            }
+            
+            // キャラクター表示ボタンのイベントリスナーを直接設定
+            document.getElementById('fortuneButton').addEventListener('click', updateCharacterDisplay);
+        });
     </script>
 </body>
 </html> 
