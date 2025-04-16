@@ -85,9 +85,29 @@
             font-weight: 700;
             margin-bottom: 20px;
             font-size: 1.8rem;
-            border-bottom: 3px dotted var(--chiikawa-yellow);
+            border-bottom: 3px dotted var(--chiikawa-pink);
             padding-bottom: 10px;
             text-align: center;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .section-header img {
+            height: 40px;
+            width: auto;
+            margin-right: 10px;
+            border-radius: 8px;
+        }
+        
+        .section-header h2 {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
         }
 
         .cat-button {
@@ -771,7 +791,10 @@
                 <!-- タスク管理セクション -->
                 <div class="col-md-6">
                     <div class="cat-card">
-                        <h2>討伐リスト</h2>
+                        <div class="section-header">
+                            <img src="images/toubatsu1.jpg" alt="討伐">
+                            <h2>今日の討伐タスク</h2>
+                        </div>
                         <form id="addTaskForm" class="mt-4">
                             <div class="input-group mb-3">
                                 <input type="text" id="newTask" class="form-control" placeholder="新しいタスクを入力">
@@ -804,7 +827,10 @@
                 <!-- スケジュール管理セクション -->
                 <div class="col-md-6">
                     <div class="cat-card">
-                        <h2>草むしり一覧</h2>
+                        <div class="section-header">
+                            <img src="images/kusamushiri1.png" alt="草むしり">
+                            <h2>草むしり一覧</h2>
+                        </div>
                         
                         <!-- タブボタン -->
                         <div class="schedule-tabs mb-3">
