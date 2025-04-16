@@ -780,7 +780,7 @@
             <div class="chiikawa-section">
                 <h2>ちいかわボタン</h2>
                 <div class="character-container" id="characterChat">
-                    <img id="characterImage" class="character-image" src="images/chiikawa1.png" alt="キャラクター">
+                    <img id="characterImage" class="character-image" src="/tasks/images/chiikawa1.png" alt="キャラクター">
                     <div class="speech-bubble">
                         <p id="characterMessage">わァッわッ</p>
                     </div>
@@ -795,7 +795,7 @@
                 <div class="col-md-6">
                     <div class="cat-card">
                         <div class="section-header">
-                            <img src="images/toubatsu1.jpg" alt="討伐" width="40" height="40">
+                            <img src="/tasks/images/toubatsu1.jpg" alt="討伐" width="40" height="40">
                             <h2>今日の討伐タスク</h2>
                         </div>
                         <form id="addTaskForm" class="mt-4">
@@ -831,7 +831,7 @@
                 <div class="col-md-6">
                     <div class="cat-card">
                         <div class="section-header">
-                            <img src="images/kusamushiri1.png" alt="草むしり" width="40" height="40">
+                            <img src="/tasks/images/kusamushiri1.png" alt="草むしり" width="40" height="40">
                             <h2>草むしり一覧</h2>
                         </div>
                         
@@ -894,13 +894,13 @@
     
     <!-- キャラクター画像 -->
     <div style="display: none;">
-        <img id="hachiware1" src="images/hachiware1.png" alt="はちわれ1">
-        <img id="hachiware2" src="images/hachiware2.png" alt="はちわれ2">
-        <img id="hachiware3" src="images/hachiware3.png" alt="はちわれ3">
-        <img id="chiikawa1" src="images/chiikawa1.png" alt="ちいかわ1">
-        <img id="chiikawa2" src="images/chiikawa2.png" alt="ちいかわ2">
-        <img id="chiikawa3" src="images/chiikawa3.png" alt="ちいかわ3">
-        <img id="kimera1" src="images/kimera1.png" alt="キメラ">
+        <img id="hachiware1" src="/tasks/images/hachiware1.png" alt="はちわれ1">
+        <img id="hachiware2" src="/tasks/images/hachiware2.png" alt="はちわれ2">
+        <img id="hachiware3" src="/tasks/images/hachiware3.png" alt="はちわれ3">
+        <img id="chiikawa1" src="/tasks/images/chiikawa1.png" alt="ちいかわ1">
+        <img id="chiikawa2" src="/tasks/images/chiikawa2.png" alt="ちいかわ2">
+        <img id="chiikawa3" src="/tasks/images/chiikawa3.png" alt="ちいかわ3">
+        <img id="kimera1" src="/tasks/images/kimera1.png" alt="キメラ">
     </div>
 
     <script>
@@ -972,7 +972,7 @@
             
             // デフォルトのキャラクターと一言を設定
             if (!characterImage.src) {
-                characterImage.src = 'images/chiikawa1.png';
+                characterImage.src = '/tasks/images/chiikawa1.png';
                 messageElement.textContent = 'わァッわッ';
             }
 
@@ -1632,7 +1632,7 @@
                 }
                 
                 // 画像パスを設定
-                const imagePath = `images/${randomType}${randomIndex}.png`;
+                const imagePath = `/tasks/images/${randomType}${randomIndex}.png`;
                 characterImage.src = imagePath;
                 
                 // メッセージを設定
